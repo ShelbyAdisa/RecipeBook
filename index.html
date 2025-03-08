@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Book</title>
+    <style>
+        body {
+          background-color: #ffe4e1;
+          font-family: 'Poppins', sans-serif;
+          text-align: center;
+          margin: 0;
+        }
+        .hero {
+          background: url(cup.jpg) center/cover no-repeat;
+          color: white;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          padding: 20px;
+        }
+        .hero h1 {
+          font-size: 3rem;
+          margin-bottom: 15px;
+        }
+        .hero p {
+          font-size: 1.5rem;
+          max-width: 600px;
+        }
+        .cta-button {
+          background: white;
+          color: #ff69b4;
+          padding: 15px 30px;
+          border: none;
+          border-radius: 25px;
+          font-size: 1.5rem;
+          cursor: pointer;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          transition: background 0.3s ease;
+          margin-top: 20px;
+        }
+        .cta-button:hover {
+          background: #fff0f5;
+        }
+        nav {
+          background: #ff69b4;
+          padding: 15px;
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+          border-radius: 0 0 10px 10px;
+        }
+        nav a {
+          text-decoration: none;
+          color: pink;
+          font-weight: bold;
+          font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="recipes.html">Recipes</a>
+    </nav>
+    
+    <div class="hero">
+        <h1>Welcome to Frost and Flour's Recipe Book</h1>
+        <p>Discover delightful frost recipes and save your favorites for later.</p>
+        <button class="cta-button" onclick="location.href='recipes.html'">Explore Recipes</button>
+    </div>
+</body>
+</html>

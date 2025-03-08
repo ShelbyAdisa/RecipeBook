@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - My Recipe Book</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #ffe4e1;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    nav {
+      background: #ff69b4;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      border-radius: 0 0 10px 10px;
+      position: relative;
+    }
+    nav a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+    }
+    nav a i {
+      margin-right: 8px;
+    }
+    .auth-buttons {
+      position: absolute;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .auth-button {
+      background-color: white;
+      color: #ff69b4;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .auth-button i {
+      margin-right: 5px;
+    }
+    .auth-button:hover {
+      background-color: #fff5f5;
+      transform: translateY(-2px);
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .login-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(255, 105, 180, 0.2);
+      width: 100%;
+      max-width: 400px;
+      padding: 30px;
+      text-align: center;
+    }
+    .login-card h1 {
+      color: #ff69b4;
+      margin-bottom: 30px;
+    }
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #ff69b4;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #ffb6c1;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #ff69b4;
+      box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.2);
+    }
+    .submit-btn {
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 30px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .submit-btn:hover {
+      background-color: #ff4da6;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+    }
+    .divider {
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: #888;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #ddd;
+    }
+    .divider::before {
+      margin-right: 10px;
+    }
+    .divider::after {
+      margin-left: 10px;
+    }
+    .register-link {
+      margin-top: 20px;
+      color: #666;
+    }
+    .register-link a {
+      color: #ff69b4;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+    .error-message {
+      color: #e74c3c;
+      margin-top: 15px;
+      font-weight: 600;
+      display: none;
+    }
+    .login-icon {
+      font-size: 60px;
+      color: #ff69b4;
+      margin-bottom: 20px;
+    }
+    .cake-decoration {
+      position: absolute;
+      font-size: 24px;
+      color: #ff69b4;
+      opacity: 0.3;
+    }
+    #cake1 { top: 10%; left: 5%; }
+    #cake2 { top: 15%; right: 8%; }
+    #cake3 { bottom: 20%; left: 7%; }
+    #cake4 { bottom: 15%; right: 6%; }
+    
+    @media (max-width: 768px) {
+      .auth-buttons {
+        position: static;
+        justify-content: center;
+        margin-top: 10px;
+      }
+      nav {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="recipes.html"><i class="fas fa-cookie"></i> Recipes</a>
+    <a href="recipebook.html"><i class="fas fa-book"></i> My Recipe Book</a>
+    <div class="auth-buttons">
+      <a href="login.html" class="auth-button">
+        <i class="fas fa-user"></i> Login
+      </a>
+      <a href="register.html" class="auth-button">
+        <i class="fas fa-user-plus"></i> Register
+      </a>
+    </div>
+  </nav>
+
+  <div class="cake-decoration" id="cake1"><i class="fas fa-birthday-cake"></i></div>
+  <div class="cake-decoration" id="cake2"><i class="fas fa-cookie"></i></div>
+  <div class="cake-decoration" id="cake3"><i class="fas fa-ice-cream"></i></div>
+  <div class="cake-decoration" id="cake4"><i class="fas fa-candy-cane"></i></div>
+
+  <div class="container">
+    <div class="login-card">
+      <div class="login-icon">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <h1>Welcome Back!</h1>
+      <form id="login-form">
+        <div class="input-group">
+          <label for="username"><i class="fas fa-user"></i> Username</label>
+          <input type="text" id="username" name="username" required placeholder="Your username">
+        </div>
+        <div class="input-group">
+          <label for="password"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="password" name="password" required placeholder="Your password">
+        </div>
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        <div id="error-message" class="error-message"></div>
+      </form>
+      <div class="divider">or</div>
+      <div class="register-link">
+        Don't have an account? <a href="register.html">Register</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('error-message');
+      
+      try {
+        const response = await fetch('users.json');
+        const users = await response.json();
+        
+        const user = users.find(u => u.username === username);
+        
+        if (user && user.password === password) {
+          
+          sessionStorage.setItem('currentUser', JSON.stringify({
+            id: user.id,
+            username: user.username,
+            email: user.email
+          }));
+          
+          window.location.href = "recipebook.html";
+        } else {
+          errorMessage.textContent = "Invalid username or password";
+          errorMessage.style.display = "block";
+        }
+      } catch (error) {
+        console.error('Error during login:', error);
+        errorMessage.textContent = "An error occurred. Please try again.";
+        errorMessage.style.display = "block";
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const currentUser = sessionStorage.getItem('currentUser');
+      if (currentUser) {
+        window.location.href = "recipebook.html";
+      }
+    });
+  </script>
+</body>
+</html>

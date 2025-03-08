@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #ffe4e1;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      margin: 0;
+    }
+    nav {
+      background: #ff69b4;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      border-radius: 0 0 10px 10px;
+      position: relative;
+    }
+    nav a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+    }
+    nav a i {
+      margin-right: 8px;
+    }
+    .auth-buttons {
+      position: absolute;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .auth-button {
+      background-color: white;
+      color: #ff69b4;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .auth-button i {
+      margin-right: 5px;
+    }
+    .auth-button:hover {
+      background-color: #fff5f5;
+      transform: translateY(-2px);
+    }
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px;
+    }
+    .recipe-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .recipe-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 420px;
+      transition: transform 0.3s;
+      position: relative;
+    }
+    .recipe-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(255, 105, 180, 0.2);
+    }
+    .recipe-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .rating {
+      margin-top: 10px;
+    }
+    .star {
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #ccc;
+      transition: color 0.2s;
+      margin: 0 2px;
+    }
+    .star.hover,
+    .star.selected {
+      color: gold;
+    }
+    .add-to-book {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      opacity: 0;
+    }
+    .recipe-card:hover .add-to-book {
+      opacity: 1;
+    }
+    .add-to-book:hover {
+      background: #ff4da6;
+      transform: scale(1.1);
+    }
+    .search-container {
+      margin: 20px auto;
+      position: relative;
+      max-width: 500px;
+    }
+    #search {
+      width: 100%;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+    }
+    #search:focus {
+      outline: none;
+      box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+    }
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ff69b4;
+    }
+    h2 {
+      color: #ff69b4;
+      border-bottom: 2px solid #ff69b4;
+      padding-bottom: 10px;
+      margin: 30px 0 20px;
+      display: inline-block;
+    }
+    
+    .view-recipe-btn {
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .view-recipe-btn i {
+      margin-right: 5px;
+    }
+
+    .view-recipe-btn:hover {
+      background-color: #ff4da6;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+    }
+    
+    .user-greeting {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 1.2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .recipe-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .auth-buttons {
+        position: static;
+        justify-content: center;
+        margin-top: 10px;
+      }
+      nav {
+        flex-direction: column;
+      }
+    }
+    @media (max-width: 480px) {
+      .recipe-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="recipes.html"><i class="fas fa-cookie"></i> Recipes</a>
+    <a href="recipebook.html"><i class="fas fa-book"></i> My Recipe Book</a>
+    <div class="auth-buttons" id="auth-buttons">
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Bakery Recipes</h1>
+    
+    <div id="user-greeting" class="user-greeting"></div>
+    
+    <div class="search-container">
+      <input type="text" id="search" placeholder="Search recipes...">
+      <i class="fas fa-search search-icon"></i>
+    </div>
+
+    <div id="main-content">
+      <h2>Cakes</h2>
+      <div class="recipe-list" id="cakes"></div>
+
+      <h2>Cookies</h2>
+      <div class="recipe-list" id="cookies"></div>
+
+      <h2>Pastries</h2>
+      <div class="recipe-list" id="pastries"></div>
+    </div>
+  </div>
+
+  <script>
+    const defaultRecipes = [
+      { id: 1,  title: "Strawberry Shortcake",    image: "strawberryshortcake.jpg",  category: "cakes"   },
+      { id: 2,  title: "Pink Velvet Cupcakes",    image: "pinkvelvet.jpg",           category: "cakes"   },
+      { id: 3,  title: "Red Velvet Cake",         image: "redvelvet.webp",           category: "cakes"   },
+      { id: 4,  title: "Carrot Cake",             image: "carrotcake.webp",          category: "cakes"   },
+      { id: 5,  title: "Macarons",                image: "macarons.jpg",             category: "cookies" },
+      { id: 6,  title: "Chocolate Chip Cookies",  image: "chocolatechip.jpg",        category: "cookies" },
+      { id: 7,  title: "Sugar Cookies",           image: "sugarcookies.jpg",         category: "cookies" },
+      { id: 8,  title: "Oatmeal Raisin Cookies",  image: "oatmealcookies.webp",      category: "cookies" },
+      { id: 9,  title: "Croissants",              image: "croissant.jpg",            category: "pastries"},
+      { id: 10, title: "Eclairs",                 image: "eclairs.webp",             category: "pastries"},
+      { id: 11, title: "Danish",                  image: "danish.webp",              category: "pastries"},
+      { id: 12, title: "Apple Turnovers",         image: "appleturnover.jpg",        category: "pastries"}
+    ];
+
+    let recipes = [];
+    
+    let ratingsByRecipe = {};
+    
+    let currentUser = null;
+    
+    function loadRecipes() {
+      const storedRecipes = localStorage.getItem('recipes');
+      if (storedRecipes) {
+        recipes = JSON.parse(storedRecipes);
+      } else {
+        recipes = [...defaultRecipes];
+        localStorage.setItem('recipes', JSON.stringify(recipes));
+      }
+      
+      recipes.forEach(recipe => {
+        if (!ratingsByRecipe[recipe.id]) {
+          ratingsByRecipe[recipe.id] = {
+            sum: 0,
+            count: 0,
+            average: 0
+          };
+        }
+      });
+    }
+
+    const searchInput = document.getElementById('search');
+
+    function checkUserLoggedIn() {
+      const userInfo = sessionStorage.getItem('currentUser');
+      
+      if (userInfo) {
+        currentUser = JSON.parse(userInfo);
+        updateNavigation(true);
+        document.getElementById('user-greeting').innerHTML = `<p>Welcome back, ${currentUser.username}! Explore our delicious recipes.</p>`;
+        return true;
+      } else {
+        updateNavigation(false);
+        return false;
+      }
+    }
+    
+    function updateNavigation(isLoggedIn) {
+      const authButtonsContainer = document.getElementById('auth-buttons');
+      
+      if (isLoggedIn) {
+        authButtonsContainer.innerHTML = `
+          <button onclick="logout()" class="auth-button">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        `;
+      } else {
+        authButtonsContainer.innerHTML = `
+          <a href="login.html" class="auth-button">
+            <i class="fas fa-user"></i> Login
+          </a>
+          <a href="register.html" class="auth-button">
+            <i class="fas fa-user-plus"></i> Register
+          </a>
+        `;
+      }
+    }
+    
+    function logout() {
+      sessionStorage.removeItem('currentUser');
+      alert('You have been logged out');
+      currentUser = null;
+      checkUserLoggedIn();
+    }
+
+    function displayRecipes(recipeArray = recipes) {
+      const categories = {
+        cakes: document.getElementById("cakes"),
+        cookies: document.getElementById("cookies"),
+        pastries: document.getElementById("pastries")
+      };
+      
+      Object.values(categories).forEach(container => (container.innerHTML = ""));
+
+      recipeArray.forEach(recipe => {
+        const card = document.createElement("div");
+        card.className = "recipe-card";
+        
+        card.innerHTML = `
+          <img src="${recipe.image}" alt="${recipe.title}" class="recipe-img">
+          <h3>${recipe.title}</h3>
+          <a href="recipe_detail.html?id=${recipe.id}" class="view-recipe-btn">
+            <i class="fas fa-utensils"></i> View Recipe
+          </a>
+          <div class="rating">
+            ${[1,2,3,4,5].map(value => `
+              <span class="star"
+                    data-id="${recipe.id}"
+                    data-value="${value}"
+                    onmouseover="highlightStars(${recipe.id}, ${value})"
+                    onmouseout="unhighlightStars(${recipe.id})"
+                    onclick="setRating(${recipe.id}, ${value})">★</span>
+            `).join('')}
+            <span id="rating-${recipe.id}">(0/5)</span>
+          </div>
+          <button class="add-to-book" onclick="addToRecipeBook(${recipe.id})">
+            <i class="fas fa-bookmark"></i>
+          </button>
+        `;
+        
+        if (categories[recipe.category]) {
+          categories[recipe.category].appendChild(card);
+        }
+      });
+
+      recipeArray.forEach(recipe => {
+        const recipeRating = ratingsByRecipe[recipe.id];
+        if (recipeRating && recipeRating.count > 0) {
+          updateStars(recipe.id, recipeRating.average);
+        }
+      });
+    }
+
+    function highlightStars(id, value) {
+      const starElements = document.querySelectorAll(`[data-id='${id}']`);
+      starElements.forEach((star, index) => {
+        if (index < value) {
+          star.classList.add('hover');
+        } else {
+          star.classList.remove('hover');
+        }
+      });
+    }
+
+    function unhighlightStars(id) {
+      const currentRating = ratingsByRecipe[id] ? ratingsByRecipe[id].average : 0;
+      const starElements = document.querySelectorAll(`[data-id='${id}']`);
+      starElements.forEach((star, index) => {
+        star.classList.remove('hover');
+        if (index < currentRating) {
+          star.classList.add('selected');
+        } else {
+          star.classList.remove('selected');
+        }
+      });
+    }
+
+    function setRating(id, value) {
+      if (!ratingsByRecipe[id]) {
+        ratingsByRecipe[id] = {
+          sum: 0,
+          count: 0,
+          average: 0
+        };
+      }
+      
+      const recipeRating = ratingsByRecipe[id];
+      
+      recipeRating.sum += value;
+      recipeRating.count += 1;
+      
+      const rawAverage = recipeRating.sum / recipeRating.count;
+      recipeRating.average = Math.ceil(rawAverage);
+      
+      updateStars(id, recipeRating.average);
+      
+      localStorage.setItem('ratings', JSON.stringify(ratingsByRecipe));
+    }
+
+    function updateStars(id, averageValue) {
+      const starElements = document.querySelectorAll(`[data-id='${id}']`);
+      starElements.forEach((star, index) => {
+        if (index < averageValue) {
+          star.classList.add('selected');
+        } else {
+          star.classList.remove('selected');
+        }
+      });
+      
+      const recipeRating = ratingsByRecipe[id];
+      const ratingDisplay = document.getElementById(`rating-${id}`);
+      if (ratingDisplay) {
+        ratingDisplay.innerText = recipeRating && recipeRating.count > 0 ? 
+          `(${recipeRating.average}/5)` : "(0/5)";
+      }
+    }
+
+    function addToRecipeBook(id) {
+      if (!currentUser) {
+        alert('Please log in to save recipes to your recipe book');
+        return;
+      }
+      
+      let userRecipes = JSON.parse(localStorage.getItem(`${currentUser.username}_recipes`) || '[]');
+      
+      if (!userRecipes.includes(id)) {
+        userRecipes.push(id);
+        localStorage.setItem(`${currentUser.username}_recipes`, JSON.stringify(userRecipes));
+        alert(`Recipe added to your book, ${currentUser.username}!`);
+      } else {
+        alert('This recipe is already in your recipe book!');
+      }
+    }
+
+    function searchRecipes() {
+      const query = searchInput.value.toLowerCase();
+      const filtered = recipes.filter(recipe =>
+        recipe.title.toLowerCase().includes(query)
+      );
+      displayRecipes(filtered);
+    }
+
+    function loadSavedRatings() {
+      const savedRatings = localStorage.getItem('ratings');
+      if (savedRatings) {
+        ratingsByRecipe = JSON.parse(savedRatings);
+      }
+    }
+    function addNewRecipe(recipe) {
+      const newId = Math.max(...recipes.map(r => r.id), 0) + 1;
+      const newRecipe = {
+        ...recipe,
+        id: newId
+      };
+      
+      recipes.push(newRecipe);
+      localStorage.setItem('recipes', JSON.stringify(recipes));
+      
+      displayRecipes();
+      
+      return newId; 
+    }
+    
+    function updateRecipe(id, updatedData) {
+      const index = recipes.findIndex(r => r.id === id);
+      if (index !== -1) {
+        recipes[index] = { ...recipes[index], ...updatedData };
+        localStorage.setItem('recipes', JSON.stringify(recipes));
+        displayRecipes();
+        return true;
+      }
+      return false;
+    }
+    
+    function deleteRecipe(id) {
+      recipes = recipes.filter(r => r.id !== id);
+      localStorage.setItem('recipes', JSON.stringify(recipes));
+      displayRecipes();
+    }
+
+    searchInput.addEventListener('input', searchRecipes);
+
+    function initPage() {
+      loadRecipes();
+      checkUserLoggedIn();
+      loadSavedRatings();
+      displayRecipes();
+    }
+    
+    initPage();
+  </script>
+</body>
+</html>

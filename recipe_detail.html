@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Detail - Bakery Recipes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #ffe4e1;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+    }
+    nav {
+      background: #ff69b4;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      border-radius: 0 0 10px 10px;
+    }
+    nav a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+      margin-bottom: 30px;
+    }
+    .recipe-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .recipe-img {
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 10px;
+      margin: 0 auto 20px;
+      display: block;
+      box-shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
+    }
+    .recipe-description {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      text-align: center;
+      font-style: italic;
+    }
+    .recipe-details {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px 25px;
+      background: #fff5f5;
+      border-radius: 15px;
+      min-width: 120px;
+      box-shadow: 0 4px 10px rgba(255, 105, 180, 0.1);
+      transition: transform 0.3s;
+    }
+    .detail-item:hover {
+      transform: translateY(-5px);
+    }
+    .detail-icon {
+      font-size: 2rem;
+      color: #ff69b4;
+      margin-bottom: 10px;
+    }
+    .detail-label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #ff69b4;
+    }
+    .recipe-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 30px;
+    }
+    .recipe-section {
+      margin-bottom: 30px;
+    }
+    .section-title {
+      color: #ff69b4;
+      border-bottom: 2px solid #ff69b4;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .section-title i {
+      margin-right: 10px;
+      font-size: 1.5rem;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 10px;
+    }
+    ol {
+      list-style-type: none;
+      padding-left: 10px;
+      counter-reset: step-counter;
+    }
+    ul li {
+      margin-bottom: 12px;
+      position: relative;
+      padding-left: 35px;
+    }
+    ul li:before {
+      content: "\f818"; /* cupcake icon */
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      color: #ff69b4;
+      position: absolute;
+      left: 0;
+      font-size: 1.2rem;
+    }
+    ol li {
+      margin-bottom: 15px;
+      position: relative;
+      padding-left: 40px;
+      counter-increment: step-counter;
+    }
+    ol li:before {
+      content: counter(step-counter);
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: white;
+      background-color: #ff69b4;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      left: 0;
+    }
+    #error-message {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px;
+      display: none;
+    }
+    .back-button {
+      display: inline-block;
+      margin-top: 20px;
+      background-color: #ff69b4;
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .back-button:hover {
+      background-color: #ff4da6;
+    }
+    
+    .social-share {
+      margin: 40px 0 20px;
+      text-align: center;
+    }
+    .social-share h3 {
+      color: #ff69b4;
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+      position: relative;
+      display: inline-block;
+    }
+    .social-share h3:before, .social-share h3:after {
+      content: '♥';
+      color: #ff69b4;
+      font-size: 1.2rem;
+      position: absolute;
+      top: 2px;
+    }
+    .social-share h3:before {
+      left: -25px;
+    }
+    .social-share h3:after {
+      right: -25px;
+    }
+    .social-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .social-button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      transition: all 0.3s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .social-button:before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: scale(0);
+      transition: all 0.3s;
+    }
+    .social-button:hover:before {
+      transform: scale(1);
+    }
+    .social-button:hover {
+      transform: translateY(-5px);
+    }
+    .facebook {
+      background: #3b5998;
+    }
+    .twitter {
+      background: #1da1f2;
+    }
+    .pinterest {
+      background: #bd081c;
+    }
+    .instagram {
+      background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+    }
+    .whatsapp {
+      background: #25d366;
+    }
+    .tooltip {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    .social-button:hover .tooltip {
+      opacity: 1;
+      bottom: -30px;
+    }
+    @media (max-width: 768px) {
+      .recipe-content {
+        grid-template-columns: 1fr;
+      }
+      .social-button {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="recipes.html">Recipes</a>
+  </nav>
+
+  <div class="container">
+    <div id="error-message"></div>
+    
+    <div id="recipe-content" style="display: none;">
+      <div class="recipe-header">
+        <h1 id="recipe-title"></h1>
+        <img id="recipe-image" src="" alt="" class="recipe-img">
+        <p id="recipe-description" class="recipe-description"></p>
+      </div>
+      
+      <div class="recipe-details">
+        <div class="detail-item">
+          <i class="fas fa-hourglass-half detail-icon"></i>
+          <span class="detail-label">Prep Time</span>
+          <span id="prep-time"></span>
+        </div>
+        <div class="detail-item">
+          <i class="fas fa-fire detail-icon"></i>
+          <span class="detail-label">Cook Time</span>
+          <span id="cook-time"></span>
+        </div>
+        <div class="detail-item">
+          <i class="fas fa-utensils detail-icon"></i>
+          <span class="detail-label">Servings</span>
+          <span id="servings"></span>
+        </div>
+      </div>
+      
+      <div class="recipe-content">
+        <div class="recipe-section">
+          <h2 class="section-title"><i class="fas fa-shopping-basket"></i> Ingredients</h2>
+          <ul id="ingredients-list"></ul>
+        </div>
+        
+        <div class="recipe-section">
+          <h2 class="section-title"><i class="fas fa-mortar-pestle"></i> Instructions</h2>
+          <ol id="instructions-list"></ol>
+        </div>
+      </div>
+      
+      <div class="social-share">
+        <h3>Share this yummy recipe!</h3>
+        <div class="social-buttons">
+          <a href="#" class="social-button facebook" id="share-facebook">
+            <i class="fab fa-facebook-f"></i>
+            <span class="tooltip">Share on Facebook</span>
+          </a>
+          <a href="#" class="social-button twitter" id="share-twitter">
+            <i class="fab fa-twitter"></i>
+            <span class="tooltip">Share on Twitter</span>
+          </a>
+          <a href="#" class="social-button pinterest" id="share-pinterest">
+            <i class="fab fa-pinterest-p"></i>
+            <span class="tooltip">Pin it!</span>
+          </a>
+          <a href="#" class="social-button instagram" id="share-instagram">
+            <i class="fab fa-instagram"></i>
+            <span class="tooltip">Share on Instagram</span>
+          </a>
+          <a href="#" class="social-button whatsapp" id="share-whatsapp">
+            <i class="fab fa-whatsapp"></i>
+            <span class="tooltip">Share via WhatsApp</span>
+          </a>
+        </div>
+      </div>
+      
+      <div style="text-align: center;">
+        <a href="recipes.html" class="back-button"><i class="fas fa-arrow-left"></i> Back to All Recipes</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="recipe_detail.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      function setupSocialSharing() {
+        const recipeTitle = document.getElementById('recipe-title').textContent;
+        const pageUrl = window.location.href;
+        const imageUrl = document.getElementById('recipe-image').src;
+        
+        // Facebook
+        document.getElementById('share-facebook').addEventListener('click', function(e) {
+          e.preventDefault();
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`, 
+                      'facebook-share', 'width=580, height=296');
+        });
+        
+        // Twitter
+        document.getElementById('share-twitter').addEventListener('click', function(e) {
+          e.preventDefault();
+          window.open(`https://twitter.com/intent/tweet?text=Check out this delicious ${encodeURIComponent(recipeTitle)}!&url=${encodeURIComponent(pageUrl)}`, 
+                      'twitter-share', 'width=550, height=235');
+        });
+        
+        // Pinterest
+        document.getElementById('share-pinterest').addEventListener('click', function(e) {
+          e.preventDefault();
+          window.open(`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&media=${encodeURIComponent(imageUrl)}&description=${encodeURIComponent('Check out this amazing ' + recipeTitle + ' recipe!')}`, 
+                      'pinterest-share', 'width=750, height=330');
+        });
+        
+        // WhatsApp
+        document.getElementById('share-whatsapp').addEventListener('click', function(e) {
+          e.preventDefault();
+          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent('Check out this amazing ' + recipeTitle + ' recipe! ' + pageUrl)}`, 
+                      'whatsapp-share', 'width=580, height=296');
+        });
+        
+        // Instagram
+        document.getElementById('share-instagram').addEventListener('click', function(e) {
+          e.preventDefault();
+          alert("Instagram doesn't support direct sharing links. Save the image and share it directly in the Instagram app!");
+        });
+      }
+      
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.target.style.display !== 'none' && document.getElementById('recipe-title').textContent) {
+            setupSocialSharing();
+            observer.disconnect();
+          }
+        });
+      });
+      
+      observer.observe(document.getElementById('recipe-content'), { attributes: true });
+    });
+  </script>
+</body>
+</html>
