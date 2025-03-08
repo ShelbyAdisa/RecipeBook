@@ -18,12 +18,44 @@
       justify-content: center;
       gap: 20px;
       border-radius: 0 0 10px 10px;
+      position: relative;
     }
     nav a {
       text-decoration: none;
       color: white;
       font-weight: bold;
       font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+    }
+    nav a i {
+      margin-right: 8px;
+    }
+    .auth-buttons {
+      position: absolute;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .auth-button {
+      background-color: white;
+      color: #ff69b4;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .auth-button i {
+      margin-right: 5px;
+    }
+    .auth-button:hover {
+      background-color: #fff5f5;
+      transform: translateY(-2px);
     }
     .container {
       max-width: 1100px;
@@ -265,6 +297,33 @@
       opacity: 1;
       bottom: -30px;
     }
+    .save-recipe-btn {
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 25px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+    }
+    .save-recipe-btn i {
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+    .save-recipe-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(255, 105, 180, 0.4);
+      background-color: #ff4da6;
+    }
+    .save-recipe {
+      text-align: center;
+      margin: 30px 0;
+    }
     @media (max-width: 768px) {
       .recipe-content {
         grid-template-columns: 1fr;
@@ -274,13 +333,25 @@
         height: 45px;
         font-size: 1.3rem;
       }
+      .auth-buttons {
+        position: static;
+        justify-content: center;
+        margin-top: 10px;
+      }
+      nav {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
   <nav>
-    <a href="index.html">Home</a>
-    <a href="recipes.html">Recipes</a>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="recipes.html"><i class="fas fa-cookie"></i> Recipes</a>
+    <a href="recipebook.html"><i class="fas fa-book"></i> My Recipe Book</a>
+    <div class="auth-buttons" id="auth-buttons">
+      <!-- Auth buttons will be dynamically inserted here -->
+    </div>
   </nav>
 
   <div class="container">
@@ -323,6 +394,13 @@
         </div>
       </div>
       
+      <!-- New save recipe button -->
+      <div class="save-recipe">
+        <button id="save-recipe-btn" class="save-recipe-btn">
+          <i class="fas fa-bookmark"></i> Save to My Recipe Book
+        </button>
+      </div>
+      
       <div class="social-share">
         <h3>Share this yummy recipe!</h3>
         <div class="social-buttons">
@@ -357,7 +435,96 @@
 
   <script src="recipe_detail.js"></script>
   <script>
+    let currentUser = null;
+
+    function checkUserLoggedIn() {
+      const userInfo = sessionStorage.getItem('currentUser');
+      
+      if (userInfo) {
+        currentUser = JSON.parse(userInfo);
+        updateNavigation(true);
+        return true;
+      } else {
+        updateNavigation(false);
+        return false;
+      }
+    }
+    
+    function updateNavigation(isLoggedIn) {
+      const authButtonsContainer = document.getElementById('auth-buttons');
+      
+      if (isLoggedIn) {
+        authButtonsContainer.innerHTML = `
+          <button onclick="logout()" class="auth-button">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        `;
+      } else {
+        authButtonsContainer.innerHTML = `
+          <a href="login.html" class="auth-button">
+            <i class="fas fa-user"></i> Login
+          </a>
+          <a href="register.html" class="auth-button">
+            <i class="fas fa-user-plus"></i> Register
+          </a>
+        `;
+      }
+    }
+    
+    function logout() {
+      sessionStorage.removeItem('currentUser');
+      alert('You have been logged out');
+      checkUserLoggedIn();
+    }
+    
+    function addToRecipeBook(id) {
+      if (!currentUser) {
+        alert('Please log in to save recipes to your recipe book');
+        return;
+      }
+      
+      let userRecipes = JSON.parse(localStorage.getItem(`${currentUser.username}_recipes`) || '[]');
+      
+      if (!userRecipes.includes(id)) {
+        userRecipes.push(id);
+        localStorage.setItem(`${currentUser.username}_recipes`, JSON.stringify(userRecipes));
+        alert(`Recipe added to your book, ${currentUser.username}!`);
+        
+        // Visual feedback - change button appearance
+        const saveButton = document.getElementById('save-recipe-btn');
+        saveButton.innerHTML = '<i class="fas fa-check"></i> Saved to Recipe Book';
+        saveButton.style.backgroundColor = '#4CAF50';
+        
+        // Restore button after 3 seconds
+        setTimeout(() => {
+          saveButton.innerHTML = '<i class="fas fa-bookmark"></i> Save to My Recipe Book';
+          saveButton.style.backgroundColor = '#ff69b4';
+        }, 3000);
+      } else {
+        alert('This recipe is already in your recipe book!');
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+      // Check user login status
+      checkUserLoggedIn();
+      
+      // Add event listener for save button
+      const saveButton = document.getElementById('save-recipe-btn');
+      if (saveButton) {
+        saveButton.addEventListener('click', function() {
+          // Extract recipe ID from URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const recipeId = urlParams.get('id');
+          
+          if (recipeId) {
+            addToRecipeBook(recipeId);
+          } else {
+            alert('Could not determine recipe ID');
+          }
+        });
+      }
+      
       function setupSocialSharing() {
         const recipeTitle = document.getElementById('recipe-title').textContent;
         const pageUrl = window.location.href;
