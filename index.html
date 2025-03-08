@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe Book</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
           background-color: #ffe4e1;
@@ -52,19 +53,65 @@
           justify-content: center;
           gap: 20px;
           border-radius: 0 0 10px 10px;
+          position: relative;
         }
         nav a {
           text-decoration: none;
-          color: pink;
+          color: white;
           font-weight: bold;
           font-size: 1.2rem;
+          display: flex;
+          align-items: center;
+        }
+        nav a i {
+          margin-right: 8px;
+        }
+        .auth-buttons {
+          position: absolute;
+          right: 20px;
+          display: flex;
+          gap: 10px;
+        }
+        .auth-button {
+          background-color: white;
+          color: #ff69b4;
+          border: none;
+          border-radius: 20px;
+          padding: 8px 15px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+        }
+        .auth-button i {
+          margin-right: 5px;
+        }
+        .auth-button:hover {
+          background-color: #fff5f5;
+          transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+          .auth-buttons {
+            position: static;
+            justify-content: center;
+            margin-top: 10px;
+          }
+          nav {
+            flex-direction: column;
+          }
         }
     </style>
 </head>
 <body>
     <nav>
-        <a href="index.html">Home</a>
-        <a href="recipes.html">Recipes</a>
+        <a href="index.html"><i class="fas fa-home"></i> Home</a>
+        <a href="recipes.html"><i class="fas fa-cookie"></i> Recipes</a>
+        <a href="recipebook.html"><i class="fas fa-book"></i> My Recipe Book</a>
+        <div class="auth-buttons" id="auth-buttons">
+        </div>
     </nav>
     
     <div class="hero">
@@ -72,5 +119,53 @@
         <p>Discover delightful frost recipes and save your favorites for later.</p>
         <button class="cta-button" onclick="location.href='recipes.html'">Explore Recipes</button>
     </div>
+
+    <script>
+        let currentUser = null;
+
+        function checkUserLoggedIn() {
+          const userInfo = sessionStorage.getItem('currentUser');
+          
+          if (userInfo) {
+            currentUser = JSON.parse(userInfo);
+            updateNavigation(true);
+            return true;
+          } else {
+            updateNavigation(false);
+            return false;
+          }
+        }
+        
+        function updateNavigation(isLoggedIn) {
+          const authButtonsContainer = document.getElementById('auth-buttons');
+          
+          if (isLoggedIn) {
+            authButtonsContainer.innerHTML = `
+              <button onclick="logout()" class="auth-button">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+            `;
+          } else {
+            authButtonsContainer.innerHTML = `
+              <a href="login.html" class="auth-button">
+                <i class="fas fa-user"></i> Login
+              </a>
+              <a href="register.html" class="auth-button">
+                <i class="fas fa-user-plus"></i> Register
+              </a>
+            `;
+          }
+        }
+        
+        function logout() {
+          sessionStorage.removeItem('currentUser');
+          alert('You have been logged out');
+          checkUserLoggedIn();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+          checkUserLoggedIn();
+        });
+    </script>
 </body>
 </html>
