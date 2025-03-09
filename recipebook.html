@@ -127,16 +127,14 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
     }
-    .remove-btn {
+    .remove-btn, .edit-btn {
       position: absolute;
       top: 10px;
-      right: 10px;
-      background: #ff69b4;
-      color: white;
-      border: none;
-      border-radius: 50%;
       width: 30px;
       height: 30px;
+      border-radius: 50%;
+      border: none;
+      color: white;
       font-size: 1.2rem;
       display: flex;
       align-items: center;
@@ -145,11 +143,24 @@
       transition: all 0.3s;
       opacity: 0;
     }
-    .recipe-card:hover .remove-btn {
+    .remove-btn {
+      right: 10px;
+      background: #ff69b4;
+    }
+    .edit-btn {
+      right: 50px;
+      background: #ff9e9e;
+    }
+    .recipe-card:hover .remove-btn,
+    .recipe-card:hover .edit-btn {
       opacity: 1;
     }
     .remove-btn:hover {
       background: #ff4da6;
+      transform: scale(1.1);
+    }
+    .edit-btn:hover {
+      background: #ff8080;
       transform: scale(1.1);
     }
     h2 {
@@ -187,6 +198,63 @@
       padding: 20px;
       margin-top: 20px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+    
+    .modal input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    
+    .modal button {
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+    
+    .modal button:hover {
+      background-color: #ff4da6;
     }
     
     @media (max-width: 768px) {
@@ -228,10 +296,22 @@
       </div>
     </div>
   </div>
+  
+  <!-- Edit recipe name modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <h3><i class="fas fa-pencil-alt"></i> Edit Recipe Name</h3>
+      <input type="text" id="recipeNameInput" placeholder="Enter new recipe name">
+      <input type="hidden" id="recipeIdInput">
+      <button onclick="saveRecipeName()">Save Changes</button>
+    </div>
+  </div>
 
   <script>
     let recipes = [];
     let currentUser = null;
+    let customRecipeNames = {};
 
     function checkUserLoggedIn() {
       const userInfo = sessionStorage.getItem('currentUser');
@@ -239,7 +319,7 @@
       if (userInfo) {
         currentUser = JSON.parse(userInfo);
         updateNavigation(true);
-        document.getElementById('user-greeting').innerHTML = `<h3>Welcome back, ${currentUser.username}!</h3>`;
+        document.getElementById('user-greeting').innerHTML = `<h3>Welcome back, ${currentUser.name}!</h3>`;
         return true;
       } else {
         updateNavigation(false);
@@ -283,6 +363,17 @@
         console.error('Error loading recipes:', error);
       }
     }
+    
+    function loadCustomRecipeNames() {
+      if (currentUser) {
+        try {
+          customRecipeNames = JSON.parse(localStorage.getItem(`${currentUser.username}_custom_names`) || '{}');
+        } catch (error) {
+          console.error('Error loading custom recipe names:', error);
+          customRecipeNames = {};
+        }
+      }
+    }
 
     function loadUserRecipeBook() {
       if (!currentUser) {
@@ -292,6 +383,7 @@
       
       try {
         const savedRecipesIds = JSON.parse(localStorage.getItem(`${currentUser.username}_recipes`) || '[]');
+        loadCustomRecipeNames();
         
         if (savedRecipesIds.length > 0) {
           displaySavedRecipes(savedRecipesIds);
@@ -320,13 +412,18 @@
           const card = document.createElement('div');
           card.className = 'recipe-card';
           
+          const recipeName = customRecipeNames[id] || recipe.title;
+          
           card.innerHTML = `
-            <img src="${recipe.image}" alt="${recipe.title}" class="recipe-img">
-            <h3>${recipe.title}</h3>
+            <img src="${recipe.image}" alt="${recipeName}" class="recipe-img">
+            <h3>${recipeName}</h3>
             <p>${recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1)}</p>
             <a href="recipe_detail.html?id=${recipe.id}" class="view-recipe-btn">
               <i class="fas fa-utensils"></i> View Recipe
             </a>
+            <button class="edit-btn" onclick="openEditModal(${recipe.id}, '${recipeName.replace(/'/g, "\\'")}')">
+              <i class="fas fa-pencil-alt"></i>
+            </button>
             <button class="remove-btn" onclick="removeFromRecipeBook(${recipe.id})">
               <i class="fas fa-times"></i>
             </button>
@@ -380,11 +477,59 @@
         
         localStorage.setItem(`${currentUser.username}_recipes`, JSON.stringify(userRecipes));
         
+        if (customRecipeNames[id]) {
+          delete customRecipeNames[id];
+          localStorage.setItem(`${currentUser.username}_custom_names`, JSON.stringify(customRecipeNames));
+        }
+        
         alert(`Recipe removed from your recipe book!`);
         
         loadUserRecipeBook();
       } catch (error) {
         console.error('Error removing recipe:', error);
+      }
+    }
+    
+    function openEditModal(id, name) {
+      const modal = document.getElementById('editModal');
+      const nameInput = document.getElementById('recipeNameInput');
+      const idInput = document.getElementById('recipeIdInput');
+      
+      nameInput.value = name;
+      idInput.value = id;
+      
+      modal.style.display = 'flex';
+    }
+    
+    function closeModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+    
+    function saveRecipeName() {
+      const nameInput = document.getElementById('recipeNameInput');
+      const idInput = document.getElementById('recipeIdInput');
+      
+      const newName = nameInput.value.trim();
+      const recipeId = idInput.value;
+      
+      if (!newName) {
+        alert('Please enter a recipe name');
+        return;
+      }
+      
+      customRecipeNames[recipeId] = newName;
+      localStorage.setItem(`${currentUser.username}_custom_names`, JSON.stringify(customRecipeNames));
+      
+      closeModal();
+      loadUserRecipeBook(); 
+      
+      alert('Recipe name updated successfully!');
+    }
+    
+    window.onclick = function(event) {
+      const modal = document.getElementById('editModal');
+      if (event.target == modal) {
+        closeModal();
       }
     }
     
