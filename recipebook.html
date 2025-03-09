@@ -319,7 +319,7 @@
       if (userInfo) {
         currentUser = JSON.parse(userInfo);
         updateNavigation(true);
-        document.getElementById('user-greeting').innerHTML = `<h3>Welcome back, ${currentUser.name}!</h3>`;
+        document.getElementById('user-greeting').innerHTML = `<h3>Welcome back, ${currentUser.username}!</h3>`;
         return true;
       } else {
         updateNavigation(false);
