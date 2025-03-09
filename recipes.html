@@ -296,7 +296,7 @@
       if (userInfo) {
         currentUser = JSON.parse(userInfo);
         updateNavigation(true);
-        document.getElementById('user-greeting').innerHTML = `<p>Welcome back, ${currentUser.username}! Explore our delicious recipes.</p>`;
+        document.getElementById('user-greeting').innerHTML = `<p>Welcome back, ${currentUser.name} ! Explore our delicious recipes.</p>`;
         return true;
       } else {
         updateNavigation(false);
